@@ -1,0 +1,5 @@
+requests 
+websockets 
+python-decouple
+python-binance
+psycopg2-binary

@@ -1,0 +1,50 @@
+services:
+  crypto_etl_service:
+    build: 
+      context: .
+      dockerfile: Dockerfile      
+
+    image: crypto-etl:latest
+    container_name: crypto-etl-01
+    
+    restart: always #unless-stopped 
+    depends_on:
+      - 'timescale'
+    volumes:
+      - ./src:/app/src
+
+    stdin_open: true # docker run -i
+    tty: true        # docker run -t
+
+    #environment:
+    #  DATABASE_URL: postgres://todoapp@postgres/todos
+    #command: ls # 'python main.py'
+
+  timescale:
+    container_name: tsdb
+    image: timescale/timescaledb:latest-pg14
+    restart: unless-stopped    
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=db_usr
+      - POSTGRES_PASSWORD=tsdb#5506
+      - POSTGRES_DB=cryptoDB
+    volumes:
+      - ./data/postgres-db:/home/postgres/pgdata/data
+
+
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: pgadmin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: pgadmin
+    ports:
+      - "5050:80"
+
+
+volumes:
+  src:
+  data:
